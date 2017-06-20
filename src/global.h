@@ -15,7 +15,7 @@ struct s_sensors {
 
 struct s_fans {
     char* path;
-    char* fan_output_path;
+    char* fan_min_path;
     char* fan_manual_path;
     struct s_fans *next;
 };

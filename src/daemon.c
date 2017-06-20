@@ -77,7 +77,8 @@ int delete_pid()
 static void cleanup_and_exit(int exit_code)
 {
 	delete_pid();
-	set_fans_auto(fans);
+	/* KMYI: No need to return to auto, since we never set it to manual now. */
+	/* set_fans_auto(fans); */
 	
 	struct s_fans *next_fan;
 	while (fans != NULL) {

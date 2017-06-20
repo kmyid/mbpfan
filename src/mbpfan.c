@@ -241,14 +241,14 @@ t_fans *retrieve_fans()
     t_fans *fans_head = NULL;
     t_fans *fan = NULL;
 
-    char *path_output = NULL;
+    char *path_min = NULL;
     char *path_manual = NULL;
 
     const char *path_begin = "/sys/devices/platform/applesmc.768/fan";
-    const char *path_output_end = "_output";
+    const char *path_min_end = "_min";
     const char *path_man_end = "_manual";
 
-    int path_min_size = strlen(path_begin) + strlen(path_output_end) + 2;
+    int path_min_size = strlen(path_begin) + strlen(path_min_end) + 2;
     int path_man_size = strlen(path_begin) + strlen(path_man_end) + 2;
     char number[2];
     sprintf(number,"%d",0);
@@ -258,28 +258,28 @@ t_fans *retrieve_fans()
 
     for(counter = 0; counter<10; counter++) {
 
-        path_output = (char*) malloc(sizeof( char ) * path_min_size);
-        path_output[0] = '\0';
+        path_min = (char*) malloc(sizeof( char ) * path_min_size);
+        path_min[0] = '\0';
         path_manual = (char*) malloc(sizeof( char ) * path_man_size);
         path_manual[0] = '\0';
         sprintf(number,"%d",counter);
 
-        strncat( path_output, path_begin, strlen(path_begin) );
-        strncat( path_output, number, strlen(number) );
-        strncat( path_output, path_output_end, strlen(path_begin) );
+        strncat( path_min, path_begin, strlen(path_begin) );
+        strncat( path_min, number, strlen(number) );
+        strncat( path_min, path_min_end, strlen(path_begin) );
 
         strncat( path_manual, path_begin, strlen(path_begin) );
         strncat( path_manual, number, strlen(number) );
         strncat( path_manual, path_man_end, strlen(path_begin) );
 
 
-        FILE *file = fopen(path_output, "r");
+        FILE *file = fopen(path_min, "r");
 
         if(file != NULL) {
             fan = (t_fans *) malloc( sizeof( t_fans ) );
-            fan->fan_output_path = (char *) malloc(sizeof( char ) * path_min_size);
+            fan->fan_min_path = (char *) malloc(sizeof( char ) * path_min_size);
             fan->fan_manual_path = (char *) malloc(sizeof( char ) * path_man_size);
-            strcpy(fan->fan_output_path, path_output);
+            strcpy(fan->fan_min_path, path_min);
             strcpy(fan->fan_manual_path, path_manual);
 
             if (fans_head == NULL) {
@@ -301,8 +301,8 @@ t_fans *retrieve_fans()
             fans_found++;
         }
 
-        free(path_output);
-        path_output = NULL;
+        free(path_min);
+        path_min = NULL;
         free(path_manual);
         path_manual = NULL;
     }
@@ -383,7 +383,7 @@ void set_fan_speed(t_fans* fans, int speed)
     FILE *file;
 
     while(tmp != NULL) {
-        file = fopen(tmp->fan_output_path, "rw+");
+        file = fopen(tmp->fan_min_path, "rw+");
 
         if(file != NULL) {
             fprintf(file, "%d", speed);
@@ -515,7 +515,9 @@ void mbpfan()
 
     sensors = retrieve_sensors();
     fans = retrieve_fans();
-    set_fans_man(fans);
+	/* KMYI: No need to set to manual mode. We are going to modify the minimum
+	 * value and the bios will take care of the rest */
+    /* set_fans_man(fans); */
 
     new_temp = get_temp(sensors);
 

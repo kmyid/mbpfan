@@ -7,6 +7,7 @@ BIN = bin/mbpfan
 CONF = mbpfan.conf
 DOC = README.md
 MAN = mbpfan.8.gz
+SERVICE = mbpfan.service
 
 COPT = 
 CC = cc
@@ -54,6 +55,7 @@ install:
 	install -m644 $(DOC) $(DESTDIR)/usr/share/doc/mbpfan
 	install -d $(DESTDIR)/usr/share/man/man8
 	install -m644 $(MAN) $(DESTDIR)/usr/share/man/man8
+	install -m644 $(SERVICE) $(DESTDIR)/lib/systemd/system
 	@echo ""
 	@echo "******************"
 	@echo "INSTALL COMPLETED"
